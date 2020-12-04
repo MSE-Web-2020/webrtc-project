@@ -1,56 +1,82 @@
 html, body {
-    width: 100%;
-    height: 100%;
-    margin: 0;
-    padding: 0;
-    background-color: #f0f0f0;
+    width: 99%;
+    height: 99%;
+    margin: 1;
+    padding: 1;
+    background-color: #929292;
 }
 
 #videos {
     position: absolute;
-    left: 30%;
-    top: 0;
-    bottom: 0;
-    right: 0;
+    left: 26%;
+    top: 1%;
+    bottom: 1%;
+    right: 1%;
     overflow: auto;
+    border: 2px solid red;
 }
 
 #videos video {
+    border-radius: 1%;
+    left: 2%;
+    top: 2%;
+    bottom: 2%;
+    right: 2%;
     display: inline-block;
-    width: 32%;
+    width: 24%;
+    border: 1px solid green;
 }
 
 #chat {
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    width: 30%;
-    border: 1px solid #0f0f0f;
+    position:absolute;
+    left: 1%;
+    top: 1%;
+    bottom: 1%;
+    width: 24%;
+    border: 2px solid red;
+    background-color:white;
 }
-
-#chat .msgIpt, #chat .fileIpt {
-    position: absolute;
-    left: 0;
-    width: 80%;
-}
-
-#chat .sendBtn, #chat .sendFileBtn {
-    position: absolute;
-    left: 80%;
-    width: 20%;
-}
-
-#chat .msgIpt, #chat .sendBtn {
-    bottom: 0;
-}
-
-#chat .fileIpt, #chat .sendFileBtn {
-    bottom: 30px;
-}
-
 #chat .msgs {
-    padding: 5%;
+    position:absolute;
+    left: 1%;
+    top: 1%;
+    right: 1%;
+    height: 88%;
+    border: 1px solid green;
+}
+#chat .msgIpt {
+    position:absolute;
+    left: 1%;
+    width: 70%;
+    bottom: 0.2%;
+    height: 4%;
+    border: 1px solid green;
+}
+#chat .fileIpt {
+    position:absolute;
+    left: 1%;
+    bottom: 5%;
+    width: 71%;
+    height: 4%;
+    border: 1px solid green;
+}
+
+#chat .sendBtn{
+    position:absolute;
+    left: 73%;
+    width: 26%;
+    bottom: 0.2%;
+    height: 4.6%;
+    border: 1px solid green;
+}
+
+#chat .sendFileBtn {
+    position:absolute;
+    left: 73%;
+    bottom: 5%;
+    height: 4.3%;
+    width: 26%;
+    border: 1px solid green;
 }
 
 #chat .msgs p {
