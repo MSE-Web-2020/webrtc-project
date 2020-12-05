@@ -12,7 +12,7 @@ var mediaRecorder;
 var startBtn = document.getElementById("start-recording");
 var stopBtn = document.getElementById("stop-recording");
 var saveBtn = document.getElementById("save-recording");
-// var pause = document.getElementById("pause");
+var video_me = document.getElementById("me");
 startBtn.onclick = function() {
     this.disabled = true;
     stopBtn.disabled = false;
@@ -34,6 +34,8 @@ saveBtn.onclick = function() {
 
 function startRecord() {
     mediaRecorder.start();
+    //高亮显示录制窗口
+    video_me.style.border="3px solid yellow";
 }
 
 // 停止录制
@@ -42,8 +44,8 @@ function stopRecord(callback) {
     stopRecordCallback = callback;
     // 终止录制器
     mediaRecorder.stop();
-    // 关闭媒体流
-    // MediaUtils.closeStream(mediaStream);
+    //取消高亮显示录制窗口
+    video_me.style.border="1px solid green";
 }
 
 function saver() {
@@ -142,9 +144,6 @@ rtc.on("connected", function (socket) {
 });
 //创建本地视频流成功
 rtc.on("stream_created", function (stream) {
-    /////////////////////HWL/////////////////////////
-
-    /////////////////////END HWL/////////////////////
     document.getElementById('me').srcObject = stream;
     document.getElementById('me').play();
     // 设置本地不播放自己的声音
