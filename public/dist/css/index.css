@@ -10,7 +10,7 @@ html, body {
     position: absolute;
     left: 26%;
     top: 1%;
-    bottom: 1%;
+    height: 65%;
     right: 1%;
     overflow: auto;
     border: 2px solid red;
@@ -96,4 +96,25 @@ html, body {
 #files .percent {
     font-weight: bold;
     text-decoration: none
+}
+
+#vueapp {
+    position: absolute;
+    left: 26%;
+    height: 33%;
+    bottom: 1%;
+    right: 1%;
+    overflow: auto;
+    border: 2px solid red;
+    background: white;
+}
+
+#control-button{
+    position: absolute;
+    left: 1%;
+    top: 5%;
+    bottom: 2%;
+    width: 30%;
+    overflow: auto;
+    border: 1px solid green;
 }

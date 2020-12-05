@@ -4,6 +4,56 @@ var msgs = document.getElementById("msgs");
 var sendFileBtn = document.getElementById("sendFileBtn");
 var files = document.getElementById("files");
 var rtc = SkyRTC();
+///////////////////////HWL//////////////////////////
+var mediaStream;
+var recorderFile;
+var stopRecordCallback;
+var mediaRecorder;
+var startBtn = document.getElementById("start-recording");
+var stopBtn = document.getElementById("stop-recording");
+var saveBtn = document.getElementById("save-recording");
+// var pause = document.getElementById("pause");
+startBtn.onclick = function() {
+    this.disabled = true;
+    stopBtn.disabled = false;
+    startRecord();
+};
+stopBtn.onclick = function(){
+    this.disabled = true;
+    saveBtn.disabled = false;
+    stopRecord(function() {
+        alert("录制成功!");
+        saveBtn.disabled = false;
+        console.log(recorderFile)
+    });
+}
+saveBtn.onclick = function() {
+    saver();
+    alert('确定要保存当前录制内容吗？');
+};
+
+function startRecord() {
+    mediaRecorder.start();
+}
+
+// 停止录制
+function stopRecord(callback) {
+    startBtn.disabled=false;
+    stopRecordCallback = callback;
+    // 终止录制器
+    mediaRecorder.stop();
+    // 关闭媒体流
+    // MediaUtils.closeStream(mediaStream);
+}
+
+function saver() {
+    var file = new File([recorderFile], 'MSE-' + (new Date).toISOString().replace(/:|\./g, '-') + '.mp4', {
+        type: 'video/mp4'
+    });
+    saveAs(file);
+}
+
+////////////////////////////////END HWL//////////////////////////////////////////
 
 /**********************************************************/
 sendBtn.onclick = function (event) {
@@ -21,9 +71,8 @@ sendFileBtn.onclick = function (event) {
     //分享文件
     rtc.shareFile("fileIpt");
 };
+
 /**********************************************************/
-
-
 //对方同意接收文件
 rtc.on("send_file_accepted", function (sendId, socketId, file) {
     var p = document.getElementById("sf-" + sendId);
@@ -93,10 +142,34 @@ rtc.on("connected", function (socket) {
 });
 //创建本地视频流成功
 rtc.on("stream_created", function (stream) {
+    /////////////////////HWL/////////////////////////
+
+    /////////////////////END HWL/////////////////////
     document.getElementById('me').srcObject = stream;
     document.getElementById('me').play();
     // 设置本地不播放自己的声音
     document.getElementById('me').volume = 0.0;
+///////////////////////////HWL///////////////////////////
+    mediaRecorder = new MediaRecorder(stream);
+	mediaStream = stream;
+	var chunks = [],
+        startTime = 0;
+    mediaRecorder.ondataavailable = function(e) {
+         mediaRecorder.blobs.push(e.data);
+         chunks.push(e.data);
+    };
+    mediaRecorder.blobs = [];
+
+    mediaRecorder.onstop = function(e) {
+        recorderFile = new Blob(chunks, {
+                'type': mediaRecorder.mimeType
+        });
+        chunks = [];
+        if(null != stopRecordCallback) {
+            stopRecordCallback();
+        }
+    };
+//////////////////////END HWL/////////////////////////////
 });
 //创建本地视频流失败
 rtc.on("stream_create_error", function () {
