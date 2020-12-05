@@ -186,5 +186,57 @@ var saveAs = saveAs || (function(view) {
     return saveAs;
   });
   }
-  
-  
+
+
+
+///////////////////////HWL//////////////////////////
+var mediaStream;
+var recorderFile;
+var stopRecordCallback;
+var mediaRecorder;
+var startBtn = document.getElementById("start-recording");
+var stopBtn = document.getElementById("stop-recording");
+var saveBtn = document.getElementById("save-recording");
+var video_me = document.getElementById("me");
+startBtn.onclick = function() {
+    this.disabled = true;
+    stopBtn.disabled = false;
+    startRecord();
+};
+stopBtn.onclick = function(){
+    this.disabled = true;
+    saveBtn.disabled = false;
+    stopRecord(function() {
+        alert("录制成功!");
+        saveBtn.disabled = false;
+        console.log(recorderFile)
+    });
+}
+saveBtn.onclick = function() {
+    saver();
+    alert('确定要保存当前录制内容吗？');
+};
+
+function startRecord() {
+    mediaRecorder.start();
+    //高亮显示录制窗口
+    video_me.style.border="3px solid yellow";
+}
+
+// 停止录制
+function stopRecord(callback) {
+    startBtn.disabled=false;
+    stopRecordCallback = callback;
+    // 终止录制器
+    mediaRecorder.stop();
+    //取消高亮显示录制窗口
+    video_me.style.border="1px solid green";
+}
+
+function saver() {
+    var file = new File([recorderFile], 'MSE-' + (new Date).toISOString().replace(/:|\./g, '-') + '.mp4', {
+        type: 'video/mp4'
+    });
+    saveAs(file);
+}
+////////////////////////////////END HWL//////////////////////////////////////////
