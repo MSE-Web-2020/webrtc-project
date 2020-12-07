@@ -23,4 +23,7 @@ run.bat将自动完成：
 默认设置端口为：443
 直接访问https://localhost即可
 其他ip地址可能需要再生成对应的证书
+
+登录页面：
+https://localhost/login
 ```

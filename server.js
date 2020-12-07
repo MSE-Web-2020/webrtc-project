@@ -12,6 +12,7 @@ const SkyRTC = require('./public/server/SkyRTC.js').listen(ws, server);
 server.listen(443, '0.0.0.0');
 app.use(express.static(path.join(__dirname,'public','client')));
 app.get('/', (req, res)=>res.sendfile(path.join(__dirname, 'index.html')));
+app.get('/login', (req, res)=>res.sendfile(path.join(__dirname, 'public','client','login.html')));
 SkyRTC.rtc.on('new_connect', socket=>console.log('创建新连接'));
 SkyRTC.rtc.on('remove_peer', socketId=>console.log(socketId + "用户离开"));
 SkyRTC.rtc.on('new_peer', (socket, room)=>console.log("新用户" + socket.id + "加入房间" + room));
