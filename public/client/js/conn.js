@@ -38,27 +38,6 @@ rtc.on("stream_created", stream=>{
     $('#me')[0].srcObject = stream;
     $('#me')[0].play();
     $('#me')[0].volume=0.0;
-///////////////////////////HWL///////////////////////////
-  mediaRecorder = new MediaRecorder(stream);
-	mediaStream = stream;
-	var chunks = [],
-        startTime = 0;
-    mediaRecorder.ondataavailable = function(e) {
-         mediaRecorder.blobs.push(e.data);
-         chunks.push(e.data);
-    };
-    mediaRecorder.blobs = [];
-
-    mediaRecorder.onstop = function(e) {
-        recorderFile = new Blob(chunks, {
-                'type': mediaRecorder.mimeType
-        });
-        chunks = [];
-        if(null != stopRecordCallback) {
-            stopRecordCallback();
-        }
-    };
-//////////////////////END HWL/////////////////////////////
 });
 //创建本地视频流失败
 rtc.on("stream_create_error", ()=>alert("create stream failed!"));

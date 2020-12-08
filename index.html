@@ -20,23 +20,42 @@
 <div id="files">
 </div>
 <div id="vueapp">
-        <div id= "control-button">
-            <!-- <button :disabled="recording" @click="btnRecordClicked">Record</button>
-            <button :disabled="paused||!recording" @click="btnPauseClicked">Pause</button>
-            <button :disabled="!paused||!recording" @click="btnResumeClicked">Resume</button>
-            <button :disabled="!recording"@click="btnStopClicked">Stop</button>
-            <button :disabled="!currentWebmData" @click="btnPlayClicked">Play</button> -->
-    
-            <!-- <button id="pause" disabled="true">暂停</button> -->
-            <button id="start-recording">开始录制</button>
-            <button id="stop-recording" disabled>停止录制</button>
-            <button id="save-recording" disabled>保存(最新录制)</button>
-        </div>
-        <!-- <video controls ref="player" width="400" height="300"></video> -->
+    <div id= "control-button">
+        <button id="record">start</button>
+        <button id="save">保存</button>
     </div>
-        
+</div>
 <script src="js/SkyRTC-client.js"></script>
-<script src="js/fileSaver.js"></script>
 <script src="js/conn.js"></script>
+<script>
+var recorderFile, mediaRecorder
+$('#record').click(function(){
+    if($(this).text() == 'start'){
+        let buffer = []
+        mediaRecorder = new MediaRecorder($('#me')[0].srcObject);
+        mediaRecorder.ondataavailable = e=>buffer.push(e.data)
+        mediaRecorder.onstop = e=>{
+            recorderFile = new Blob(buffer, {'type':'video/mp4'})
+            buffer = []
+            alert("录制成功!")
+        }
+        mediaRecorder.start();
+        $('#me').css('border',"3px solid yellow");
+        $(this).text('stop')
+    }else{
+        mediaRecorder.stop()
+        $('#me').css('border',"1px solid green")
+        $(this).text('start')
+    }
+})
+
+$('#save').click(()=>{
+    confirm('确定要保存当前录制内容吗？')
+    &&$('<a>').attr({
+        'href':window.URL.createObjectURL(recorderFile),
+        'download':`MSE-${(new Date).toISOString().replace(/:|\./g,'-')}.mp4`,
+    }).appendTo('body').bind('click',function(){this.click()}).click().remove()
+})
+</script>
 </body>
 </html>
