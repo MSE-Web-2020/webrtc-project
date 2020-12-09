@@ -1,23 +1,13 @@
-var rtc = SkyRTC()
 //////////////////YZK//////////////////////
+var rtc = SkyRTC()
 var rtc_connect = rtc.prototype.connect.toString().slice(25,-1)
+var rtc_connect_enhance = connect_enhance.toString().slice(12,-1)
 rtc.prototype.connect=function(server, room){
     eval(rtc_connect)
-    this.on('send_to_client', data=>{
-        alert('我已增强')
-        console.log(data)
-    })
+    eval(rtc_connect_enhance)
 }
-rtc.prototype.enhance =function(message){
-     this.socket.send(JSON.stringify({eventName:"send_to_server",data:message}));
-};
+for (let i in custom_enhance) rtc.prototype[i] = custom_enhance[i]
 rtc = new rtc
-//广播信息
-rtc.on('enhance_message', data=>$('<p>').text(`系统广播: ${data}`).appendTo('#msgs'));
-//测试广播
-$('#test').click(()=>{
-    rtc.enhance('向服务器推送信息')
-})
 //////////////////END YZK////////////////////
 //广播消息
 $('#sendBtn').click(()=>{
@@ -70,6 +60,6 @@ rtc.on('pc_add_stream', (stream, socketId)=>{
 //删除其他用户
 rtc.on('remove_peer',socketId=>$(`#other-${socketId}`).remove());
 //接收到文字信息
-rtc.on('data_channel_message', (channel, socketId, message)=>$('<p>').text(`${socketId}: ${message}`).appendTo('#msgs'));
+rtc.on('data_channel_message', (channel, socketId, message)=>$('<p>').text(`${socketId}: ${message}`).appendTo('#msgs'))
 //连接WebSocket服务器
 rtc.connect("wss:" + window.location.href.substring(window.location.protocol.length).split('#')[0]+"/wss", window.location.hash.slice(1));
