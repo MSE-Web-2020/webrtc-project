@@ -1,8 +1,10 @@
 var recorderFile, mediaRecorder
+////////////////////// HWL ////////////////////////////
 var videoIdArray=new Array();
 var otherVideoId = document.getElementById("otherVideoIdNum");
 var videoOther;
 var n=0;
+////////////////////END HWL //////////////////////////////
 $('#record').click(function(){
     if($(this).text() == 'start'){
         $("#save")[0].disabled=true;
@@ -24,7 +26,7 @@ $('#record').click(function(){
         $(this).text('start')
     }
 })
-
+//////////////////////// HWL //////////////////////////
 $('#record-other').click(function(){
     if($(this).text() == 'start-other'){
         $("#save")[0].disabled=true;
@@ -54,7 +56,7 @@ $('#record-other').click(function(){
         $(this).text('start-other')
     }
 })
-
+/////////////////// END HWL ///////////////////////////////////
 $('#save').click(()=>{
     confirm('确定要保存当前录制内容吗？')
     &&$('<a>').attr({
