@@ -54,6 +54,8 @@ rtc.on("stream_create_error", ()=>alert("create stream failed!"));
 //接收到其他用户的视频流
 rtc.on('pc_add_stream', (stream, socketId)=>{
     var id="other-"+socketId;
+    videoIdArray[n]=id;
+    n++;
     $('<video>').attr({id:id,class:'other',autoplay:'autoplay'}).appendTo('#videos');
     rtc.attachStream(stream, id);
 });

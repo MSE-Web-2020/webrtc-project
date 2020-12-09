@@ -1,6 +1,11 @@
 var recorderFile, mediaRecorder
+var videoIdArray=new Array();
+var otherVideoId = document.getElementById("otherVideoIdNum");
+var videoOther;
+var n=0;
 $('#record').click(function(){
     if($(this).text() == 'start'){
+        $("#save")[0].disabled=true;
         let buffer = []
         mediaRecorder = new MediaRecorder($('#me')[0].srcObject);
         mediaRecorder.ondataavailable = e=>buffer.push(e.data)
@@ -14,8 +19,39 @@ $('#record').click(function(){
         $(this).text('stop')
     }else{
         mediaRecorder.stop()
+        $("#save")[0].disabled=false;
         $('#me').css('border',"1px solid green")
         $(this).text('start')
+    }
+})
+
+$('#record-other').click(function(){
+    if($(this).text() == 'start-other'){
+        $("#save")[0].disabled=true;
+        let buffer = []
+        var otherVideoIdNum = parseInt(otherVideoId.value);
+        alert("当前录制窗口:"+otherVideoIdNum);
+        if(otherVideoIdNum < videoIdArray.length){
+            videoOther = document.getElementById(videoIdArray[otherVideoIdNum]);
+            mediaRecorder = new MediaRecorder(videoOther.srcObject);
+            mediaRecorder.ondataavailable = e=>buffer.push(e.data)
+            mediaRecorder.onstop = e=>{
+                recorderFile = new Blob(buffer, {'type':'video/mp4'})
+                buffer = []
+                alert("录制成功!")
+            }
+            mediaRecorder.start();
+            videoOther.style.border="3px solid yellow";
+            $(this).text('stop-other')
+        }else{
+            alert("无对应窗口信息！");
+            $("#record-other")[0].disabled = false;
+        }
+    }else{
+        mediaRecorder.stop()
+        $("#save")[0].disabled=false;
+        videoOther.style.border="1px solid green";
+        $(this).text('start-other')
     }
 })
 
