@@ -94,11 +94,16 @@ SkyRTC.prototype.init = function (socket) {
     });
     that.emit('new_connect', socket);
 };
-
-module.exports.listen = function (ws, server) {
-    let SkyRTCServer = new ws({server: server});
-    SkyRTCServer.rtc = new SkyRTC();
-    errorCb = errorCb(SkyRTCServer.rtc);
-    SkyRTCServer.on('connection', function(socket){this.rtc.init(socket)});
-    return SkyRTCServer;
-};
+/////////////////////////YZK//////////////////////////
+module.exports = {
+    rtc:SkyRTC,
+    err:errorCb
+}
+// module.exports.listen = function (ws, server) {
+//     let SkyRTCServer = new ws({server: server});
+//     SkyRTCServer.rtc = new SkyRTC();
+//     errorCb = errorCb(SkyRTCServer.rtc);
+//     SkyRTCServer.on('connection', function(socket){this.rtc.init(socket)});
+//     return SkyRTCServer;
+// }
+///////////////////////END YZK////////////////////////

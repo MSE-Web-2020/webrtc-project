@@ -20,23 +20,14 @@
 <div id="files">
 </div>
 <div id="vueapp">
-        <div id= "control-button">
-            <!-- <button :disabled="recording" @click="btnRecordClicked">Record</button>
-            <button :disabled="paused||!recording" @click="btnPauseClicked">Pause</button>
-            <button :disabled="!paused||!recording" @click="btnResumeClicked">Resume</button>
-            <button :disabled="!recording"@click="btnStopClicked">Stop</button>
-            <button :disabled="!currentWebmData" @click="btnPlayClicked">Play</button> -->
-    
-            <!-- <button id="pause" disabled="true">暂停</button> -->
-            <button id="start-recording">开始录制</button>
-            <button id="stop-recording" disabled>停止录制</button>
-            <button id="save-recording" disabled>保存(最新录制)</button>
-        </div>
-        <!-- <video controls ref="player" width="400" height="300"></video> -->
+    <div id= "control-button">
+        <button id="record">start</button>
+        <button id="save">保存</button>
+        <button id="test">Test</button>
     </div>
-        
+</div>   
 <script src="js/SkyRTC-client.js"></script>
-<script src="js/fileSaver.js"></script>
 <script src="js/conn.js"></script>
+<script src="js/fileSaver.js"></script>
 </body>
 </html>

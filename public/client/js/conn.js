@@ -1,4 +1,24 @@
-var rtc = SkyRTC();
+var rtc = SkyRTC()
+//////////////////YZK//////////////////////
+var rtc_connect = rtc.prototype.connect.toString().slice(25,-1)
+rtc.prototype.connect=function(server, room){
+    eval(rtc_connect)
+    this.on('send_to_client', data=>{
+        alert('我已增强')
+        console.log(data)
+    })
+}
+rtc.prototype.enhance =function(message){
+     this.socket.send(JSON.stringify({eventName:"send_to_server",data:message}));
+};
+rtc = new rtc
+//广播信息
+rtc.on('enhance_message', data=>$('<p>').text(`系统广播: ${data}`).appendTo('#msgs'));
+//测试广播
+$('#test').click(()=>{
+    rtc.enhance('向服务器推送信息')
+})
+//////////////////END YZK////////////////////
 //广播消息
 $('#sendBtn').click(()=>{
     rtc.broadcast($('#msgIpt').val());
@@ -38,27 +58,6 @@ rtc.on("stream_created", stream=>{
     $('#me')[0].srcObject = stream;
     $('#me')[0].play();
     $('#me')[0].volume=0.0;
-///////////////////////////HWL///////////////////////////
-  mediaRecorder = new MediaRecorder(stream);
-	mediaStream = stream;
-	var chunks = [],
-        startTime = 0;
-    mediaRecorder.ondataavailable = function(e) {
-         mediaRecorder.blobs.push(e.data);
-         chunks.push(e.data);
-    };
-    mediaRecorder.blobs = [];
-
-    mediaRecorder.onstop = function(e) {
-        recorderFile = new Blob(chunks, {
-                'type': mediaRecorder.mimeType
-        });
-        chunks = [];
-        if(null != stopRecordCallback) {
-            stopRecordCallback();
-        }
-    };
-//////////////////////END HWL/////////////////////////////
 });
 //创建本地视频流失败
 rtc.on("stream_create_error", ()=>alert("create stream failed!"));

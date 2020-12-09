@@ -2,7 +2,9 @@ const SkyRTC = function () {
     let gThat;
     let PeerConnection = (window.PeerConnection||window.webkitPeerConnection00||window.webkitRTCPeerConnection||window.mozRTCPeerConnection);
     let getUserMedia = (navigator.getUserMedia||navigator.mediaDevices.getUserMedia||navigator.webkitGetUserMedia||navigator.mozGetUserMedia||navigator.msGetUserMedia);
-    let nativeRTCIceCandidate = (window.mozRTCIceCandidate||window.RTCIceCandidate);
+    /////////////////////////YZK//////////////////////////
+    // let nativeRTCIceCandidate = (window.mozRTCIceCandidate||window.RTCIceCandidate);
+    ///////////////////////END YZK////////////////////////
     let nativeRTCSessionDescription = (window.mozRTCSessionDescription||window.RTCSessionDescription);
     const iceServer = {"iceServers": [
             {"url": "stun:stun.l.google.com:19302"},
@@ -59,6 +61,10 @@ const SkyRTC = function () {
     skyrtc.prototype = new EventEmitter();
     /*************************服务器连接部分***************************/
     skyrtc.prototype.connect = function (server, room) {
+        /////////////////////////YZK//////////////////////////
+        //改变nativeRTCIceCandidate作用域
+        let nativeRTCIceCandidate = (window.mozRTCIceCandidate||window.RTCIceCandidate);
+        ///////////////////////END YZK////////////////////////
         var socket, that = this;
         room = room || "";
         socket = this.socket = new WebSocket(server);
@@ -473,5 +479,9 @@ const SkyRTC = function () {
         var that = this;
         delete that.receiveFiles[sendId];
     };
-    return new skyrtc();
+    /////////////////////////YZK//////////////////////////
+    //不直接创建实例，方便增强rtc
+    return skyrtc
+    // return new skyrtc()
+    ///////////////////////END YZK////////////////////////
 };
