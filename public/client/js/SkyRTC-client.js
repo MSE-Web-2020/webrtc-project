@@ -1,20 +1,28 @@
 const SkyRTC = function () {
     let gThat;
-    let PeerConnection = (window.PeerConnection||window.webkitPeerConnection00||window.webkitRTCPeerConnection||window.mozRTCPeerConnection);
-    let getUserMedia = (navigator.getUserMedia||navigator.mediaDevices.getUserMedia||navigator.webkitGetUserMedia||navigator.mozGetUserMedia||navigator.msGetUserMedia);
+    let PeerConnection = (window.PeerConnection || window.webkitPeerConnection00 || window.webkitRTCPeerConnection || window.mozRTCPeerConnection);
+    let getUserMedia = (navigator.getUserMedia || navigator.mediaDevices.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia);
     /////////////////////////YZK//////////////////////////
     // let nativeRTCIceCandidate = (window.mozRTCIceCandidate||window.RTCIceCandidate);
     ///////////////////////END YZK////////////////////////
-    let nativeRTCSessionDescription = (window.mozRTCSessionDescription||window.RTCSessionDescription);
-    const iceServer = {"iceServers": [
+    let nativeRTCSessionDescription = (window.mozRTCSessionDescription || window.RTCSessionDescription);
+    const iceServer = {
+        "iceServers": [
             {"url": "stun:stun.l.google.com:19302"},
             {"url": "stun:global.stun.twilio.com:3478"},
-            {"url": "turn:global.stun.twilio.com:3478",
-             "username": "79fdd6b3c57147c5cc44944344c69d85624b63ec30624b8674ddc67b145e3f3c",
-             "credential": "xjfTOLkVmDtvFDrDKvpacXU7YofAwPg6P6TXKiztVGw"}]};
+            {
+                "url": "turn:global.stun.twilio.com:3478",
+                "username": "79fdd6b3c57147c5cc44944344c69d85624b63ec30624b8674ddc67b145e3f3c",
+                "credential": "xjfTOLkVmDtvFDrDKvpacXU7YofAwPg6P6TXKiztVGw"
+            }]
+    };
     let packetSize = 1000;
+
     /*事件处理器*/
-    function EventEmitter() {this.events = {}}
+    function EventEmitter() {
+        this.events = {}
+    }
+
     //绑定事件函数
     EventEmitter.prototype.on = function (eventName, callback) {
         this.events[eventName] = this.events[eventName] || [];
@@ -29,6 +37,7 @@ const SkyRTC = function () {
     };
     /**********************************************************/
     /*                   流及信道建立部分                       */
+
     /**********************************************************/
     /*******************基础部分*********************/
     function skyrtc() {
@@ -57,19 +66,20 @@ const SkyRTC = function () {
         //保存所有接受到的文件
         this.receiveFiles = {};
     }
+
     //继承自事件处理器，提供绑定事件和触发事件的功能
     skyrtc.prototype = new EventEmitter();
     /*************************服务器连接部分***************************/
     skyrtc.prototype.connect = function (server, room) {
         /////////////////////////YZK//////////////////////////
         //改变nativeRTCIceCandidate作用域
-        let nativeRTCIceCandidate = (window.mozRTCIceCandidate||window.RTCIceCandidate);
+        let nativeRTCIceCandidate = (window.mozRTCIceCandidate || window.RTCIceCandidate);
         ///////////////////////END YZK////////////////////////
         var socket, that = this;
         room = room || "";
         socket = this.socket = new WebSocket(server);
         socket.onopen = function () {
-            socket.send(JSON.stringify({"eventName": "__join","data": {"room": room}}));
+            socket.send(JSON.stringify({"eventName": "__join", "data": {"room": room}}));
             that.emit("socket_opened", socket);
         };
         socket.onmessage = function (message) {
@@ -77,7 +87,7 @@ const SkyRTC = function () {
             if (json.eventName) that.emit(json.eventName, json.data);
             else that.emit("socket_receive_message", socket, json);
         };
-        socket.onerror = err=>that.emit("socket_error", err, socket);
+        socket.onerror = err => that.emit("socket_error", err, socket);
         socket.onclose = function (data) {
             that.localMediaStream.close();
             var pcs = that.peerConnections;
@@ -129,7 +139,7 @@ const SkyRTC = function () {
         this.on('send_file_error', function (error, socketId, sendId, file) {
             that.cleanSendFile(sendId, socketId);
         });
-        this.on('receive_file_error', (err, sendId)=>that.cleanReceiveFile(sendId));
+        this.on('receive_file_error', (err, sendId) => that.cleanReceiveFile(sendId));
         this.on('ready', function () {
             that.createPeerConnections();
             that.addStreams();
@@ -137,6 +147,7 @@ const SkyRTC = function () {
             that.sendOffers();
         });
     };
+
     /*************************流处理部分*******************************/
     //访问用户媒体设备的兼容方法
     function getUserMediaFun(constraints, success, error) {
@@ -150,6 +161,7 @@ const SkyRTC = function () {
         else if (navigator.getUserMedia) navigator.getUserMedia(constraints, success, error);
         else that.emit("stream_create_error", new Error('WebRTC is not yet supported in this browser.'));
     }
+
     function createStreamSuccess(stream) {
         if (gThat) {
             gThat.localMediaStream = stream;
@@ -158,9 +170,11 @@ const SkyRTC = function () {
             if (gThat.initializedStreams === gThat.numStreams) gThat.emit("ready");
         }
     }
+
     function createStreamError(error) {
         if (gThat) gThat.emit("stream_create_error", error);
     }
+
     skyrtc.prototype.createStream = function (options) {
         var that = this;
         gThat = this;
@@ -191,10 +205,13 @@ const SkyRTC = function () {
             pcCreateOfferCbGen = function (pc, socketId) {
                 return function (session_desc) {
                     pc.setLocalDescription(session_desc);
-                    that.socket.send(JSON.stringify({"eventName": "__offer","data": {"sdp": session_desc,"socketId": socketId}}));
+                    that.socket.send(JSON.stringify({
+                        "eventName": "__offer",
+                        "data": {"sdp": session_desc, "socketId": socketId}
+                    }));
                 };
             },
-            pcCreateOfferErrorCb = err=>console.log(err);
+            pcCreateOfferErrorCb = err => console.log(err);
         for (i = 0, m = this.connections.length; i < m; i++) {
             pc = this.peerConnections[this.connections[i]];
             pc.createOffer(pcCreateOfferCbGen(pc, this.connections[i]), pcCreateOfferErrorCb);
@@ -209,10 +226,13 @@ const SkyRTC = function () {
     skyrtc.prototype.sendAnswer = function (socketId, sdp) {
         var pc = this.peerConnections[socketId], that = this;
         pc.setRemoteDescription(new nativeRTCSessionDescription(sdp));
-        pc.createAnswer(session_desc=>{
+        pc.createAnswer(session_desc => {
             pc.setLocalDescription(session_desc);
-            that.socket.send(JSON.stringify({"eventName": "__answer","data": {"socketId": socketId,"sdp": session_desc}}));
-        }, err=>console.log(err))
+            that.socket.send(JSON.stringify({
+                "eventName": "__answer",
+                "data": {"socketId": socketId, "sdp": session_desc}
+            }));
+        }, err => console.log(err))
     };
     //接收到answer类型信令后将对方的session描述写入PeerConnection中
     skyrtc.prototype.receiveAnswer = function (socketId, sdp) {
@@ -245,9 +265,9 @@ const SkyRTC = function () {
             that.emit("pc_get_ice_candidate", evt.candidate, socketId, pc);
         };
 
-        pc.onopen = ()=>that.emit("pc_opened", socketId, pc);
-        pc.onaddstream = evt=>that.emit('pc_add_stream', evt.stream, socketId, pc);
-        pc.ondatachannel = evt=>{
+        pc.onopen = () => that.emit("pc_opened", socketId, pc);
+        pc.onaddstream = evt => that.emit('pc_add_stream', evt.stream, socketId, pc);
+        pc.ondatachannel = evt => {
             that.addDataChannel(socketId, evt.channel);
             that.emit('pc_add_data_channel', evt.channel, socketId, pc);
         };
@@ -267,7 +287,7 @@ const SkyRTC = function () {
     //发送消息方法
     skyrtc.prototype.sendMessage = function (message, socketId) {
         if (this.dataChannels[socketId].readyState.toLowerCase() === 'open') {
-            this.dataChannels[socketId].send(JSON.stringify({type: "__msg",data: message}));
+            this.dataChannels[socketId].send(JSON.stringify({type: "__msg", data: message}));
         }
     };
     //对所有的PeerConnections创建Data channel
@@ -279,8 +299,8 @@ const SkyRTC = function () {
     skyrtc.prototype.createDataChannel = function (socketId, label) {
         var pc, key, channel;
         pc = this.peerConnections[socketId];
-        socketId||this.emit("data_channel_create_error", socketId, new Error("attempt to create data channel without socket id"));
-        (pc instanceof PeerConnection)||this.emit("data_channel_create_error", socketId, new Error("attempt to create data channel without peerConnection"));
+        socketId || this.emit("data_channel_create_error", socketId, new Error("attempt to create data channel without socket id"));
+        (pc instanceof PeerConnection) || this.emit("data_channel_create_error", socketId, new Error("attempt to create data channel without peerConnection"));
         try {
             channel = pc.createDataChannel(label);
         } catch (error) {
@@ -291,7 +311,7 @@ const SkyRTC = function () {
     //为Data channel绑定相应的事件回调函数
     skyrtc.prototype.addDataChannel = function (socketId, channel) {
         var that = this;
-        channel.onopen = ()=>that.emit('data_channel_opened', channel, socketId);
+        channel.onopen = () => that.emit('data_channel_opened', channel, socketId);
         channel.onclose = function (event) {
             delete that.dataChannels[socketId];
             that.emit('data_channel_closed', channel, socketId);
@@ -301,7 +321,7 @@ const SkyRTC = function () {
             if (json.type === '__file') that.parseFilePacket(json, socketId);
             else that.emit('data_channel_message', channel, socketId, json.data);
         };
-        channel.onerror = err=>that.emit('data_channel_error', channel, socketId, err);
+        channel.onerror = err => that.emit('data_channel_error', channel, socketId, err);
         this.dataChannels[socketId] = channel;
         return channel;
     };
@@ -316,7 +336,8 @@ const SkyRTC = function () {
         else if (signal === 'accept') that.receiveFileAccept(json.sendId, socketId);
         else if (signal === 'refuse') that.receiveFileRefuse(json.sendId, socketId);
         else if (signal === 'chunk') that.receiveFileChunk(json.data, json.sendId, socketId, json.last, json.percent);
-        else if (signal === 'close') {}
+        else if (signal === 'close') {
+        }
     };
     /***********************发送者部分***********************/
     //通过Dtata channel向房间内所有其他用户广播文件
@@ -355,7 +376,7 @@ const SkyRTC = function () {
                 }
             }
         }
-        nextTick&&setTimeout(()=>that.sendFileChunks(),10);
+        nextTick && setTimeout(() => that.sendFileChunks(), 10);
     };
     //发送某个文件的碎片
     skyrtc.prototype.sendFileChunk = function (socketId, sendId) {
@@ -415,8 +436,14 @@ const SkyRTC = function () {
     //发送文件请求
     skyrtc.prototype.sendAsk = function (socketId, sendId, fileToSend) {
         var that = this, packet, channel = that.dataChannels[socketId];
-        channel||that.emit("send_file_error", new Error("Channel has been closed"), socketId, sendId, fileToSend.file);
-        packet = {name: fileToSend.file.name, size: fileToSend.file.size, sendId: sendId, type: "__file", signal: "ask"};
+        channel || that.emit("send_file_error", new Error("Channel has been closed"), socketId, sendId, fileToSend.file);
+        packet = {
+            name: fileToSend.file.name,
+            size: fileToSend.file.size,
+            sendId: sendId,
+            type: "__file",
+            signal: "ask"
+        };
         channel.send(JSON.stringify(packet));
     };
     //获得随机字符串来生成文件发送ID
@@ -440,8 +467,8 @@ const SkyRTC = function () {
     };
     //接收到所有文件碎片后将其组合成一个完整的文件并自动下载
     skyrtc.prototype.getTransferedFile = function (sendId) {
-        var that = this,fileInfo = that.receiveFiles[sendId],hyperlink = document.createElement("a"),
-            mouseEvent = new MouseEvent('click', {view: window,bubbles: true,cancelable: true});
+        var that = this, fileInfo = that.receiveFiles[sendId], hyperlink = document.createElement("a"),
+            mouseEvent = new MouseEvent('click', {view: window, bubbles: true, cancelable: true});
         hyperlink.href = fileInfo.data;
         hyperlink.target = '_blank';
         hyperlink.download = fileInfo.name || dataURL;
@@ -453,14 +480,14 @@ const SkyRTC = function () {
     //接收到发送文件请求后记录文件信息
     skyrtc.prototype.receiveFileAsk = function (sendId, fileName, fileSize, socketId) {
         var that = this;
-        that.receiveFiles[sendId] = {socketId: socketId,state: "ask",name: fileName,size: fileSize};
+        that.receiveFiles[sendId] = {socketId: socketId, state: "ask", name: fileName, size: fileSize};
         that.emit("receive_file_ask", sendId, socketId, fileName, fileSize);
     };
     //发送同意接收文件信令
     skyrtc.prototype.sendFileAccept = function (sendId) {
         var that = this, packet, fileInfo = that.receiveFiles[sendId], channel = that.dataChannels[fileInfo.socketId];
-        channel||that.emit("receive_file_error", new Error("Channel has been destoried"), sendId, socketId);
-        packet = {type: "__file",signal: "accept",sendId: sendId};
+        channel || that.emit("receive_file_error", new Error("Channel has been destoried"), sendId, socketId);
+        packet = {type: "__file", signal: "accept", sendId: sendId};
         channel.send(JSON.stringify(packet));
     };
     //发送拒绝接受文件信令
@@ -469,8 +496,8 @@ const SkyRTC = function () {
             fileInfo = that.receiveFiles[sendId],
             channel = that.dataChannels[fileInfo.socketId],
             packet;
-        channel||that.emit("receive_file_error", new Error("Channel has been destoried"), sendId, socketId);
-        packet = {type: "__file",signal: "refuse",sendId: sendId};
+        channel || that.emit("receive_file_error", new Error("Channel has been destoried"), sendId, socketId);
+        packet = {type: "__file", signal: "refuse", sendId: sendId};
         channel.send(JSON.stringify(packet));
         that.cleanReceiveFile(sendId);
     };

@@ -1,3 +1,2 @@
-# Dependency directories
-node_modules/
-设计材料/
+# dependencies
+/node_modules
